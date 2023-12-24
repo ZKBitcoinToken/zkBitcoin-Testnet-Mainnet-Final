@@ -852,8 +852,6 @@ contract zkBitcoin is Ownable, ERC20Permit {
         	_mint(mintToAddress, reward_amount);
 		
 		tokensMinted = tokensMinted.add(reward_amount);
-
-		previousBlockTime = block.timestamp;
 		
 		emit Mint(mintToAddress, totalOwed, epochCount, challengeNumber );
 
@@ -882,6 +880,7 @@ contract zkBitcoin is Ownable, ERC20Permit {
 		uint256 xa = ((block.timestamp - previousBlockTime) * 888) / targetTime;
 		uint ratio = xa * 100 / 888 ;
 	
+		previousBlockTime = block.timestamp;
 		
 		if(ratio > 100){
 			
