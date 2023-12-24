@@ -1,15 +1,10 @@
 /*CHANGE TO SHOULD BE BEFORE LAUNCH
 	
-    uint public _BLOCKS_PER_READJUSTMENT = 16; // should be 1024
-    
-NEED TO CHANGE mintToJustABAS to MintJustzkBTC function name, keeping the same for mining compadibility for now
+    uint public _BLOCKS_PER_READJUSTMENT = 32; // should be 2048
 
 Change Auctions to 12 days
 
 Need to change startTime to 1 week after contract is launched blocktime.timestamp + 1 week so OpenMining can be called 1 week after
-
-Remove StakePermit and MAXStakePermit and only use StakeForPermit and MAXStakeForPermit instead
-
 
 */
 // Zero Knowledge Bitcoin - zkBitcoin (zkBTC) Token - Token and Mining Contract
@@ -523,6 +518,7 @@ contract zkBitcoin is Ownable, ERC20Permit {
 	
     uint constant _totalSupply = 21000000000000000000000000;
     uint public latestDifficultyPeriodStarted2 = block.timestamp; //BlockTime of last readjustment
+    uint public latestDifficultyPeriodStarted = block.number; // for readjustments
     uint public epochCount = 0;//number of 'blocks' mined
     uint public latestreAdjustStarted = block.timestamp; // shorter blocktime of attempted readjustment
     uint public _BLOCKS_PER_READJUSTMENT = 32; // should be 2048 blocks more inline with BTC
@@ -532,26 +528,21 @@ contract zkBitcoin is Ownable, ERC20Permit {
     uint public  _MINIMUM_TARGET =  2**16;
     uint public miningTarget = _MAXIMUM_TARGET.div(100);  //500 difficulty to start
     
-    bytes32 public challengeNumber = 0x687f5af3cd2468ae6e6c727c52eab582b58fb507858502bd1560cb38a64047a6; //generate a new one when a new reward is minted
+    bytes32 public challengeNumber = blockhash(block.number -1); //generate a new one when a new reward is minted
     uint public rewardEra = 0;
     uint public maxSupplyForEra = (_totalSupply - _totalSupply.div( 2**(rewardEra + 1)));
     uint public reward_amount = 2;
     
     //Stuff for Functions
     uint public previousBlockTime  =  block.timestamp; // Previous Blocktime
-    uint public Token2Per=           0; //Amount of ETH distributed per mint somewhat
     uint public tokensMinted = 0;			//Tokens Minted only for Miners
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
     uint public slowBlocks = 0;
     uint public epochOld = 0;  //Epoch count at each readjustment 
-    uint public give0x = 0;
-    uint public give = 1;
+
     uint public lastTokensMinted = 0;
-    uint public multipler = 0;
-    // metadata
-	
-    uint public latestDifficultyPeriodStarted = block.number;
+    // startup locks
     bool initeds = false;
     uint public startTime = 0;
     bool locked = false;
@@ -589,8 +580,6 @@ contract zkBitcoin is Ownable, ERC20Permit {
 		reward_amount = 0; 
 	    rewardEra = 0;
 		tokensMinted = 0;
-		multipler = address(this).balance / (1 * 10 ** 18); 	
-		Token2Per = (2** rewardEra) * address(this).balance / (250000 + 250000*(multipler)); //aimed to give about 400 days of reserves
 
 	    miningTarget = _MAXIMUM_TARGET.div(10000000000000000000000000008888888); //super difficult so no1 can solve till OpenMining
 	    _startNewMiningEpoch();
@@ -845,7 +834,7 @@ contract zkBitcoin is Ownable, ERC20Permit {
              	solutionForChallenge[challengeNumber] = true;
 
 		_startNewMiningEpoch();
-		challengeNumber = 0x687f5af3cd2468ae6e6c727c52eab582b58fb507858502bd1560cb38a64047a6 ;
+		challengeNumber = blockhash(block.number -1);
 		bool solution = solutionForChallenge[challengeNumber];
 		if(solution != false) revert();  //prevent the same answer from awarding twice
  					
@@ -1198,13 +1187,13 @@ contract zkBitcoin is Ownable, ERC20Permit {
 		if( TimeSinceLastDifficultyPeriod2 < adjusDiffTargetTime )
 		{
 			uint excess_block_pct = (adjusDiffTargetTime.mult(100)).div( TimeSinceLastDifficultyPeriod2 );
-			give = 1;
+
 			uint excess_block_pct_extra = excess_block_pct.sub(100).limitLessThan(1000);
 			//make it harder 
 			miningTarget = miningTarget.sub(miningTarget.div(1333).mult(excess_block_pct_extra));   //by up to 2x
 		}else{
 			uint shortage_block_pct = (TimeSinceLastDifficultyPeriod2.mult(100)).div( adjusDiffTargetTime );
-			give = 2;
+
 			uint shortage_block_pct_extra = shortage_block_pct.sub(100).limitLessThan(1000); //always between 0 and 1000
 			//make it easier
 			miningTarget = miningTarget.add(miningTarget.div(400).mult(shortage_block_pct_extra));   //by up to 4x
@@ -1389,4 +1378,3 @@ contract zkBitcoin is Ownable, ERC20Permit {
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 */
-
