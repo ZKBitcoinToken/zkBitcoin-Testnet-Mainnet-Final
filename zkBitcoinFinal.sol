@@ -2,7 +2,7 @@
 	
     uint public _BLOCKS_PER_READJUSTMENT = 32; // should be 2048
 
-Change Auctions to 12 days
+Change Auctions to 15 days
 
 Need to change startTime to 1 week after contract is launched blocktime.timestamp + 1 week so OpenMining can be called 1 week after
 
