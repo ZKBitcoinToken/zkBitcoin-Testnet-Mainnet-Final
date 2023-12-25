@@ -817,13 +817,13 @@ contract zkBitcoin is Ownable, ERC20Permit {
 
 
 	//compatibility function
-	function mint(uint256 nonce, bytes32 challenge_digest) public payable returns (bool success) {
+	function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
 		mintTo(nonce, msg.sender);
 		return true;
 	}
 	
 
-	function mintTo(uint256 nonce, address mintToAddress) public payable returns (uint256 totalOwed) {
+	function mintTo(uint256 nonce, address mintToAddress) public returns (uint256 totalOwed) {
 
 		bytes32 digest =  keccak256(abi.encodePacked(challengeNumber, msg.sender, nonce));
 
@@ -865,7 +865,7 @@ contract zkBitcoin is Ownable, ERC20Permit {
 	// ERC20 Minting
 	///
 
-	function mintTokensArrayTo(uint256 nonce, bytes32 challenge_digest, address[] memory ExtraFunds, address[] memory MintTo) public payable returns (uint256 owedzz) {
+	function mintTokensArrayTo(uint256 nonce, bytes32 challenge_digest, address[] memory ExtraFunds, address[] memory MintTo) public returns (uint256 owedzz) {
 		uint256 xa = ((block.timestamp - previousBlockTime) * 888) / targetTime;
 		uint ratio = xa * 100 / 888 ;
 	
@@ -929,7 +929,7 @@ contract zkBitcoin is Ownable, ERC20Permit {
 
 
 
-	function mintTokensSameAddress(uint256 nonce, bytes32 challenge_digest, address[] memory ExtraFunds, address MintTo) public payable returns (bool success) {
+	function mintTokensSameAddress(uint256 nonce, bytes32 challenge_digest, address[] memory ExtraFunds, address MintTo) public returns (bool success) {
 		address[] memory dd = new address[](ExtraFunds.length + 1); 
 
 		for(uint x=0; x< (ExtraFunds.length + 1); x++)
