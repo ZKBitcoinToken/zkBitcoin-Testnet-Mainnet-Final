@@ -54,7 +54,7 @@ Need to change startTime to 1 week after contract is launched blocktime.timestam
 
 pragma solidity ^0.8.11;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "./draft-ERC20Permit.sol";
 
 contract Ownable {
     address public owner;
